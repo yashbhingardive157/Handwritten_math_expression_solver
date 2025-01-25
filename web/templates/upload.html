@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Handwritten Math Expression Calculator</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    h1, h3 {
+      color: #333;
+    }
+    img {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-top: 20px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .container {
+      width: 80%;
+      margin: auto;
+      margin-top: 50px;
+    }
+    .btn-home {
+      margin-top: 20px;
+      color: #fff;
+      background-color: #007bff;
+      border-color: #007bff;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      display: inline-block;
+    }
+    .btn-home:hover {
+      background-color: #0056b3;
+      border-color: #004085;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Your Handwritten Math Expression:</h1>
+
+    <!-- Display the uploaded or drawn image -->
+    <div>
+      <img src="/uploads/{{ image_file_name }}" alt="Math Expression" style="max-width: 90%; max-height: 400px;">
+    </div>
+
+    <!-- Display the recognized expression -->
+    <h3>
+      <b>Expression: <span style="color: black;">{{ expression }}</span></b>
+    </h3>
+
+    <!-- Display the result -->
+    <h3>
+      <b>Result: <span style="color: black;">{{ result }}</span></b>
+    </h3>
+
+    <!-- Back to home page link -->
+    <a href="/" class="btn-home">Home Page</a>
+  </div>
+</body>
+</html>

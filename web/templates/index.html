@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>myProject</title>
+ 
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <style>
+
+    body {
+      background-color: #f8f9fa;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    h2 {
+      color: #343a40;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    h3 {
+      color: #495057;
+      margin-top: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-top: 50px;
+    }
+
+    #drawingCanvas {
+      border: 2px dashed #6c757d;
+      margin: 20px auto;
+      display: block;
+      background-color: #ffffff;
+      border-radius: 8px;
+      cursor: crosshair;
+    }
+
+    .btn {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+      border-color: #004085;
+    }
+
+    .btn-warning {
+      background-color: #ffc107;
+      border-color: #ffc107;
+      color: #212529;
+    }
+
+    .btn-warning:hover {
+      background-color: #e0a800;
+      border-color: #d39e00;
+    }
+
+    .btn-file {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+
+    .btn-file input[type="file"] {
+      position: absolute;
+      top: 0;
+      right: 0;
+      min-width: 100%;
+      min-height: 100%;
+      font-size: 999px;
+      text-align: right;
+      filter: alpha(opacity=0);
+      opacity: 0;
+      outline: none;
+      background: none;
+      cursor: inherit;
+      display: block;
+    }
+
+    hr {
+      border-top: 1px solid #dee2e6;
+    }
+
+    #logo {
+      height: 50px;
+      margin-bottom: 20px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Handwritten Math Expression Solver</h2>
+
+    <div style="margin-top: 30px;">
+      <form action="/upload" method="POST" enctype="multipart/form-data">
+        <h3>Upload Image:</h3>
+        <span class="btn btn-default btn-file">
+          Select Image <input type="file" name="image" accept="image/png, image/jpeg" required>
+        </span><br><br>
+        <button type="submit" class="btn btn-primary">Calculate</button>
+      </form>
+    </div>
+
+    <hr>
+
+    <div style="margin-top: 30px;">
+      <form id="drawingForm" method="POST" action="/draw">
+        <h3>Or Draw Below:</h3>
+        <canvas id="drawingCanvas" width="600" height="300"></canvas><br>
+        <button type="button" id="clearCanvas" class="btn btn-warning">Clear</button>
+        <button type="button" id="undoCanvas" class="btn btn-warning">Undo</button>
+        <button type="submit" class="btn btn-primary">Calculate</button>
+        <input type="hidden" id="canvasData" name="imageData">
+      </form>
+    </div>
+  </div>
+
+  <script>
+    var canvas = document.getElementById('drawingCanvas');
+    var ctx = canvas.getContext('2d');
+    var isDrawing = false;
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 2;
+
+
+    var undoStack = [];
+
+  
+    function saveState() {
+      undoStack.push(canvas.toDataURL());
+    }
+
+
+    function undoLastAction() {
+      if (undoStack.length > 0) {
+        var lastState = new Image();
+        lastState.src = undoStack.pop();
+        lastState.onload = function () {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(lastState, 0, 0);
+        };
+      }
+    }
+
+    canvas.addEventListener('mousedown', function (e) {
+      saveState(); 
+      isDrawing = true;
+      ctx.beginPath();
+      ctx.moveTo(e.offsetX, e.offsetY);
+    });
+
+    canvas.addEventListener('mousemove', function (e) {
+      if (isDrawing) {
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+      }
+    });
+
+    canvas.addEventListener('mouseup', function () {
+      isDrawing = false;
+    });
+
+    document.getElementById('clearCanvas').addEventListener('click', function () {
+      saveState();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    });
+
+    document.getElementById('undoCanvas').addEventListener('click', function () {
+      undoLastAction();
+    });
+
+    document.getElementById('drawingForm').addEventListener('submit', function (e) {
+      var imageData = canvas.toDataURL('image/jpeg');
+      document.getElementById('canvasData').value = imageData;
+    });
+  </script>
+</body>
+</html>
+

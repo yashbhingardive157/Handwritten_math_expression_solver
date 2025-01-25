@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>myProject</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script> <!-- html2canvas library -->
+  <style>
+    /* General styling */
+    body {
+      background-color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    h2, h3 {
+      color: black;
+    }
+
+    #drawingCanvas {
+      border: 1px solid #333;
+      margin: 20px auto;
+      display: block;
+      background-color: white;
+    }
+
+    .btn-primary, .btn-warning {
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" style="margin-top: 30px;">
+    <h2>Handwritten Math Equation Solver</h2>
+
+    <!-- Image upload form -->
+    <div style="margin-top: 30px;">
+      <form action="/upload" method="POST" enctype="multipart/form-data">
+        <h3>Upload Image</h3>
+        <span class="btn btn-default btn-file">
+          Select Image <input type="file" name="image" accept="image/png, image/jpeg" required>
+        </span><br><br>
+        <button type="submit" class="btn btn-primary">Calculate</button>
+      </form>
+    </div>
+
+    <hr>
+
+    <!-- Drawing canvas form -->
+    <div style="margin-top: 30px;">
+      <form id="drawingForm" method="POST" action="/draw">
+        <h3>Or Draw Below:</h3>
+        <canvas id="drawingCanvas" width="600" height="300"></canvas><br>
+        <button type="button" id="clearCanvas" class="btn btn-warning">Clear</button>
+        <button type="submit" class="btn btn-primary">Calculate</button>
+        <input type="hidden" id="canvasData" name="imageData">
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Set up the canvas for drawing
+    var canvas = document.getElementById('drawingCanvas');
+    var ctx = canvas.getContext('2d');
+    var isDrawing = false;
+
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = 'black'; // Pen color
+    ctx.lineWidth = 1.5;
+
+
+    // Handle drawing
+    canvas.addEventListener('mousedown', function (e) {
+      isDrawing = true;
+      ctx.beginPath();
+      ctx.moveTo(e.offsetX, e.offsetY);
+    });
+
+    canvas.addEventListener('mousemove', function (e) {
+      if (isDrawing) {
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+      }
+    });
+
+    canvas.addEventListener('mouseup', function () {
+      isDrawing = false;
+    });
+
+    // Clear the canvas
+    document.getElementById('clearCanvas').addEventListener('click', function () {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    // Submit the canvas drawing
+    document.getElementById('drawingForm').addEventListener('submit', function (e) {
+      var imageData = canvas.toDataURL('image/jpeg'); // Convert canvas to base64 JPEG
+      document.getElementById('canvasData').value = imageData; // Set hidden input value
+    });
+  </script>
+</body>
+</html>
+
